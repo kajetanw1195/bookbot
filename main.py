@@ -1,85 +1,41 @@
-with open("books/frankenstein.txt") as f:
-    book = f.read()
-
-def count_words(book):
-    count = 0
-    words = book.split()
-    for i in range(len(words)):
-        count += 1
-    return count
-        
+import sys
+from stats import (
+    get_num_words,
+    chars_dict_to_sorted_list,
+    get_chars_dict,
+)
 
 
-def count_characters(book):
-    lowercase_text = book.lower()
-    char_count = {}
-    for char in lowercase_text:
-        if char in char_count:
-            char_count[char] += 1
-        else:
-            char_count[char] = 1
-    return char_count
+def main():
+    if len(sys.argv) < 2:
+        print("Usage: python3 main.py <path_to_book>")
+        sys.exit(1)
+    book_path = sys.argv[1]
+
+    text = get_book_text(book_path)
+    num_words = get_num_words(text)
+    chars_dict = get_chars_dict(text)
+    chars_sorted_list = chars_dict_to_sorted_list(chars_dict)
+    print_report(book_path, num_words, chars_sorted_list)
 
 
-words = count_words(book)
-characters = count_characters(book)
-
-list_of_dicts = [{"character" : char, "count" : count} for char, count in characters.items() if char.isalpha()]
-
-def sort(dict):
-    return dict["count"]
-
-list_of_dicts.sort(reverse=True, key=sort)
-
-print("--- Begin report of books/frankenstein.txt ---")
-print(f"{words} words found in the document\n")
-for i in list_of_dicts:
-    print(f"The '{i["character"]}' character was found {i["count"]} times")
-print("--- End report ---")
+def get_book_text(path):
+    with open(path) as f:
+        return f.read()
 
 
+def print_report(book_path, num_words, chars_sorted_list):
+    print("============ BOOKBOT ============")
+    print(f"Analyzing book found at {book_path}...")
+    print("----------- Word Count ----------")
+    print(f"Found {num_words} total words")
+    print("--------- Character Count -------")
+    for item in chars_sorted_list:
+        if not item["char"].isalpha():
+            continue
+        print(f"{item['char']}: {item['num']}")
+
+    print("============= END ===============")
 
 
-
-
-
-
-
-
-
-
-
-
-#---------------------------------------------------------------------
-# list_of_dictionaries = []
-# for char, count in characters.items():
-#     list_of_dictionaries.append({char:count})
-
-# print(list_of_dictionaries)
-#---------------------------------------------------------------------
-
-
-
-#---------------------------------------------------------------------
-# Let's say we want to count letters in "banana"
-#text = "banana"
-
-# Method 1: Using a dictionary and loop
-# char_count = {}
-# for char in text:
-#    if char in char_count:
-#        char_count[char] += 1
-#    else:
-#        char_count[char] = 1
-
-# Or Method 2: Using string's count() method
-#unique_chars = set(text)
-#char_count = {}
-#for char in unique_chars:
-#    char_count[char] = text.count(char)
-
-#Both approaches would give you:
-
-# char_count would be:
-# {'b': 1, 'a': 3, 'n': 2}
-#---------------------------------------------------------------------
+main()
